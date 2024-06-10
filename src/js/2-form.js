@@ -1,31 +1,34 @@
 const input = document.querySelector('.feedback-form input');
 const text = document.querySelector('.feedback-form textarea');
 const form = document.querySelector('.feedback-form');
-const formData = { email: '', message: '' };
 
-form.addEventListener('input', () => {
-  formData.email = input.value.trim();
-  formData.message = text.value.trim();
+form.addEventListener('input',addValue);
+form.addEventListener('submit',onSubmit);
+
+function addValue(e ) {
+  formData[e.target.name] = e.target.value.trim();
+  
   localStorage.setItem('feedback-form-state', JSON.stringify(formData));
-});
-
-const savedSettings = JSON.parse(localStorage.getItem('feedback-form-state'));
-
+  }
+  
+  const savedSettings = JSON.parse(localStorage.getItem('feedback-form-state'));
+  
+  const formData = { email: savedSettings?.email || '', message: savedSettings?.message || ''};
 if (savedSettings !== null) {
   text.value = savedSettings.message;
   input.value = savedSettings.email;
 }
 
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  if (input.value !== '' && text.value !== '') {
-    formData.email = input.value.trim();
-    formData.message = text.value.trim();
 
-    input.value = '';
-    text.value = '';
-    localStorage.removeItem('feedback-form-state');
+function onSubmit(e) {
+  e.preventDefault();
+  const email = e.currentTarget.elements.email.value.trim()
+  const message = e.currentTarget.elements.message.value.trim()
+
+  if (email !== '' && message !== '') {
     console.log(formData);
+    localStorage.removeItem('feedback-form-state');
+   e.currentTarget.reset()
   } else {
     const alert = document.querySelector('.alert');
     alert.style.visibility = 'visible';
@@ -36,4 +39,4 @@ form.addEventListener('submit', e => {
       alert.style.visibility = 'hidden';
     }, 3000);
   }
-});
+}
